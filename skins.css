@@ -1,0 +1,31 @@
+/* Unidad 3 — Temas visuales / skins.
+   El skin manda sobre los colores DENTRO del canvas (fondo del tablero vía
+   --board-bg); el tema claro/oscuro (style.css) sigue mandando sobre el
+   resto de la página. --board-bg se actualiza también desde skins.js
+   (inline style en :root) para reflejar el skin activo sin recargar. */
+
+#skin-select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#skin-select:focus {
+  outline: 2px solid var(--value-color);
+  outline-offset: 1px;
+}
+
+body.skin-neon #board,
+body.skin-neon #next-canvas {
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.35);
+}
+
+body.skin-pastel #board,
+body.skin-pastel #next-canvas {
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.08);
+}

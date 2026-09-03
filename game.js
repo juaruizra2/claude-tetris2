@@ -171,18 +171,23 @@ function updateHUD() {
 
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
+  if (typeof getActiveSkin === 'function') {
+    getActiveSkin().drawBlock(context, x, y, colorIndex, size, alpha);
+    return;
+  }
+  // Fallback si skins.js aún no cargó (p.ej. init() inicial de game.js).
   const color = COLORS[colorIndex];
   context.globalAlpha = alpha ?? 1;
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
   context.fillStyle = THEME_COLORS[theme].highlight;
   context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
   context.globalAlpha = 1;
 }
 
 function drawGrid() {
-  ctx.strokeStyle = THEME_COLORS[theme].grid;
+  const skin = typeof getActiveSkin === 'function' ? getActiveSkin() : null;
+  ctx.strokeStyle = (skin && skin.grid) || THEME_COLORS[theme].grid;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
