@@ -1,106 +1,57 @@
-name: Claude Issue Triage
+name: Claude Issue Formatter
 
 on:
   issues:
     types: [opened, edited]
 
-concurrency:
-  group: triage-${{ github.event.issue.number }}
-  cancel-in-progress: true
-
 jobs:
-  triage:
-    # Excluir PRs (el evento `issues` también dispara para PRs), bots, y evitar
-    # duplicar trabajo con claude.yml cuando el issue ya menciona @claude.
-    if: |
-      github.event.issue.pull_request == null &&
-      github.actor != 'github-actions[bot]' &&
-      !endsWith(github.actor, '[bot]') &&
-      !contains(github.event.issue.body, '@claude') &&
-      !contains(github.event.issue.title, '@claude')
+  format-issue:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
       id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Run Claude Issue Triage
-        id: claude-triage
+      - name: Format issue with Claude
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--allowedTools "Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh issue list:*),Bash(gh api:*),Read,Grep,Glob"'
+          claude_args: '--allowedTools "Bash(gh issue:*)"'
           prompt: |
-            Analiza el issue #${{ github.event.issue.number }} del repo ${{ github.repository }}
-            (`gh issue view ${{ github.event.issue.number }} --json title,body,labels,comments`).
+            You are a GitHub issue formatter for a Tetris game project (vanilla JS/HTML/CSS, no dependencies).
 
-            ## Contexto del proyecto
-            Tetris en JavaScript vanilla. Sin build, sin dependencias, sin tests. Tres archivos:
-            `index.html`, `style.css`, `game.js`. Toda la lógica y el estado global viven en
-            `game.js` como variables globales y funciones sobre ellas (no hay clases). Funciones
-            clave: `collide` (única detección de colisión), `tryRotate` (wall kicks
-            `[0,-1,1,-2,2]`), `spawn`/`lockPiece`/`merge`/`clearLines` (ciclo de vida de pieza),
-            `draw`/`drawBlock`/`ghostY` (render), listener único de `keydown` en `document`.
-            Puntuación/nivel/`dropInterval` se recalculan juntos dentro de `clearLines()`.
+            An issue was just ${{ github.event.action }} with the following details:
+            - Issue number: #${{ github.event.issue.number }}
+            - Title: ${{ github.event.issue.title }}
+            - Body: ${{ github.event.issue.body }}
+            - Author: ${{ github.event.issue.user.login }}
 
-            ## Tarea
-            1. Lee el título y cuerpo del issue. Si hace falta, lee `game.js`, `index.html` o
-               `style.css` para ubicar la zona del código implicada.
-            2. Determina qué labels aplican, **solo de este set cerrado** (no crees labels nuevos,
-               no uses otros aunque existan en el repo):
-               - `bug`: algo no funciona como se espera.
-               - `enhancement`: pedido de nueva funcionalidad o mejora.
-               - `documentation`: falta o está mal la documentación.
-               - `question`: pregunta que no describe un problema accionable.
-               - `accessibility`: afecta a usuarios con discapacidad.
-               - `duplicate`: ya reportado en otro issue (búscalo con `gh issue list`).
-               - `invalid`: no tiene sentido, no aplica al proyecto, o falta info clave.
-               - `help wanted` / `good first issue`: úsalos solo además de `bug`/`enhancement`,
-                 si el problema está bien acotado y es simple.
-               - `wontfix`: úsalo solo si es evidente por el propio contenido del issue que no se
-                 va a abordar (raro; normalmente lo decide un humano — si dudas, no lo pongas).
-               Si ningún label encaja, no apliques ninguno y dilo explícitamente en el diagnóstico.
-               Aplica los labels que correspondan con `gh issue edit ${{ github.event.issue.number }} --add-label "<label>"`.
-               No quites labels existentes que no hayas puesto tú.
-            3. Publica (o actualiza) un único comentario de diagnóstico con este formato exacto:
+            Your tasks:
+            1. **Add labels** based on the issue content. Use only these labels:
+               - `bug` — something is broken or behaving incorrectly
+               - `enhancement` — new feature or improvement request
+               - `question` — asking for help or clarification
+               - `documentation` — docs need updating
+               - `good first issue` — simple, beginner-friendly task
+               - `duplicate` — if it seems like a known/repeated problem
 
-               ```
-               <!-- claude-triage -->
-               ## 🔍 Diagnóstico automático
-               **Tipo:** bug | mejora | pregunta | documentación | inválido
-               **Labels aplicados:** <lista o "ninguno — no encaja en el set existente">
+            2. **Post a comment** on the issue that includes:
+               - A brief, friendly summary of what the issue is about (1-2 sentences)
+               - A "Formatted Report" section with:
+                 - **Type**: Bug / Feature Request / Question / Other
+                 - **Summary**: one clear sentence describing the problem or request
+                 - **Steps to reproduce** (for bugs): list them if not provided, ask the user to provide them if it's a bug
+                 - **Expected behavior** (for bugs): what should happen
+                 - **Suggested labels**: the labels you applied and why
+               - A closing note thanking the contributor
 
-               ### Resumen
-               <1-3 frases>
+            Use the `gh` CLI to apply labels and post the comment. Example commands:
+              gh issue edit ${{ github.event.issue.number }} --add-label "bug" --repo ${{ github.repository }}
+              gh issue comment ${{ github.event.issue.number }} --body "..." --repo ${{ github.repository }}
 
-               ### Zona del código implicada
-               <rutas file:line o función concreta, o "N/A" si no aplica>
-
-               ### Causa probable
-               <explicación técnica, o "N/A" para preguntas/mejoras>
-
-               ### Propuesta de solución
-               <pasos concretos y accionables>
-
-               ### Criterios de aceptación
-               - [ ] ...
-               - [ ] ...
-
-               ### Riesgos / acoplamientos
-               <p.ej. si toca clearLines(), recordar que score/level/dropInterval se recalculan juntos ahí>
-               ```
-
-            4. **Idempotencia — obligatorio**: antes de comentar, busca si ya existe un comentario
-               tuyo con el marcador `<!-- claude-triage -->`:
-               `gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments --jq '.[] | select(.body | startswith("<!-- claude-triage -->")) | .id'`
-               - Si existe un id, actualízalo (no crees uno nuevo):
-                 `gh api --method PATCH repos/${{ github.repository }}/issues/comments/<id> -f body='<contenido>'`
-               - Si no existe, créalo con `gh issue comment ${{ github.event.issue.number }} --body '<contenido>'`.
-               El objetivo es que el issue tenga siempre exactamente un comentario de triage, que
-               se actualiza en cada edición en vez de acumularse.
+            Be concise, helpful, and friendly. Do not over-engineer the response.
