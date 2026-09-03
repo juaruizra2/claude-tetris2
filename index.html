@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tetris</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="highscores.css" />
 </head>
 <body>
   <div class="wrapper">
@@ -49,6 +50,23 @@
             <li><kbd>P</kbd> pausa</li>
           </ul>
         </div>
+
+        <div class="panel-section" id="highscores">
+          <span class="label">RECORDS</span>
+          <table class="hs-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Score</th>
+                <th>Líneas</th>
+                <th>Combo</th>
+              </tr>
+            </thead>
+            <tbody id="hs-list"></tbody>
+          </table>
+          <button id="hs-reset-btn" class="hs-reset-btn">Resetear records</button>
+        </div>
       </aside>
     </div>
 
@@ -56,11 +74,32 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+
+        <div id="hs-save" class="hs-save hidden">
+          <p class="hs-save-label">¡Nuevo récord!</p>
+          <input type="text" id="hs-name-input" maxlength="12" placeholder="ANÓNIMO" />
+          <button id="hs-save-btn">Guardar</button>
+        </div>
+
+        <table class="hs-table hs-overlay-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Score</th>
+              <th>Líneas</th>
+              <th>Combo</th>
+            </tr>
+          </thead>
+          <tbody id="hs-overlay-list"></tbody>
+        </table>
+
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>
   </div>
 
   <script src="game.js"></script>
+  <script src="highscores.js"></script>
 </body>
 </html>

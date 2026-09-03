@@ -1,0 +1,126 @@
+/* ---- Tabla de records ---- */
+.hs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.hs-table th {
+  text-align: left;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--label-color);
+  font-weight: 600;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--kbd-border);
+}
+
+.hs-table td {
+  padding: 3px 4px;
+  color: var(--text);
+}
+
+.hs-table td.hs-num,
+.hs-table td:nth-child(3),
+.hs-table td:nth-child(4),
+.hs-table td:nth-child(5) {
+  font-family: 'Courier New', Courier, monospace;
+  text-align: right;
+  color: var(--value-color);
+}
+
+.hs-table td.hs-empty {
+  text-align: center;
+  color: var(--controls-color);
+  font-style: italic;
+  padding: 8px 4px;
+}
+
+.hs-table tr.hs-new {
+  background: rgba(122, 162, 247, 0.15);
+  outline: 1px solid var(--value-color);
+}
+
+.hs-reset-btn {
+  margin-top: 4px;
+  background: transparent;
+  color: var(--controls-color);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hs-reset-btn:hover {
+  background: var(--kbd-bg);
+  color: var(--text);
+}
+
+/* El overlay se comparte con la pausa (otra unidad): ocultar el
+   contenido de records mientras esté en estado de pausa. */
+.overlay.paused #hs-save,
+.overlay.paused .hs-overlay-table {
+  display: none;
+}
+
+/* ---- Panel dentro del overlay de game over ---- */
+.hs-overlay-table {
+  width: 220px;
+  max-width: 80vw;
+}
+
+.hs-save {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hs-save.hidden {
+  display: none;
+}
+
+.hs-save-label {
+  font-size: 12px;
+  color: var(--overlay-title-color);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+#hs-name-input {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--kbd-border);
+  background: var(--kbd-bg);
+  color: var(--text);
+  width: 140px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#hs-name-input:focus {
+  outline: 2px solid var(--value-color);
+}
+
+#hs-save-btn {
+  background: var(--restart-bg);
+  color: var(--restart-color);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: background 0.15s;
+}
+
+#hs-save-btn:hover {
+  background: var(--restart-hover);
+}

@@ -53,6 +53,7 @@ const THEME_COLORS = {
 };
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let combo, maxCombo;
 let theme = 'dark';
 
 function createBoard() {
@@ -123,6 +124,7 @@ function clearLines() {
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
   }
+  return cleared;
 }
 
 function ghostY() {
@@ -150,7 +152,13 @@ function softDrop() {
 
 function lockPiece() {
   merge();
-  clearLines();
+  const cleared = clearLines();
+  if (cleared > 0) {
+    combo++;
+    if (combo > maxCombo) maxCombo = combo;
+  } else {
+    combo = 0;
+  }
   spawn();
 }
 
@@ -238,7 +246,11 @@ function endGame() {
   draw();
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
+  overlay.classList.remove('paused');
   overlay.classList.remove('hidden');
+  if (typeof onGameOver === 'function') {
+    onGameOver({ score, lines, maxCombo });
+  }
 }
 
 function applyTheme(newTheme) {
@@ -264,6 +276,7 @@ function togglePause() {
     cancelAnimationFrame(animId);
     overlayTitle.textContent = 'PAUSA';
     overlayScore.textContent = '';
+    overlay.classList.add('paused');
     overlay.classList.remove('hidden');
   }
 }
@@ -290,6 +303,8 @@ function init() {
   score = 0;
   lines = 0;
   level = 1;
+  combo = 0;
+  maxCombo = 0;
   paused = false;
   gameOver = false;
   dropInterval = 1000;
@@ -299,8 +314,12 @@ function init() {
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  overlay.classList.remove('paused');
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
+  if (typeof onGameStart === 'function') {
+    onGameStart();
+  }
 }
 
 document.addEventListener('keydown', e => {
