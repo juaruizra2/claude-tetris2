@@ -39,6 +39,13 @@
           <canvas id="next-canvas" width="120" height="120"></canvas>
         </div>
 
+        <div class="panel-section">
+          <span class="label">RECORDS</span>
+          <ol id="records-list" class="records"></ol>
+          <div id="records-bests" class="records-bests"></div>
+          <button id="reset-records" type="button">Resetear records</button>
+        </div>
+
         <div class="panel-section controls">
           <span class="label">CONTROLS</span>
           <ul>
@@ -56,6 +63,15 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <div id="overlay-records" class="overlay-records">
+          <p id="overlay-stats"></p>
+          <form id="name-form" class="name-form hidden">
+            <label for="name-input">¡Nuevo récord! Escribe tu nombre</label>
+            <input id="name-input" maxlength="12" autocomplete="off" />
+            <button type="submit">Guardar</button>
+          </form>
+          <ol id="overlay-records-list" class="records"></ol>
+        </div>
         <button id="restart-btn">Reiniciar</button>
       </div>
     </div>
@@ -93,6 +109,7 @@
     </div>
   </div>
 
+  <script src="records.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
