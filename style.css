@@ -125,6 +125,53 @@ body {
   border-radius: 4px;
 }
 
+/* ---- Skin chips ---- */
+.skin-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.chip {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  color: var(--kbd-color);
+  border-radius: 4px;
+  padding: 5px 0;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--value-color);
+}
+
+.chip.active {
+  background: var(--value-color);
+  color: var(--restart-color);
+  border-color: var(--value-color);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--value-color);
+  outline-offset: 2px;
+}
+
+/* ---- Skins de tablero ---- */
+body.skin-neon {
+  --board-bg: #05050a;
+  --board-border: #1b2b3a;
+  --grid-color: #12202c;
+}
+
+body.skin-pixel {
+  --board-bg: #14140f;
+  --board-border: #2a2a1e;
+  --grid-color: #1a1a12;
+}
+
 /* ---- Theme toggle ---- */
 .theme-switch {
   position: relative;
