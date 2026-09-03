@@ -24,6 +24,11 @@
   --restart-hover: #9bbdff;
   --grid-color: #22222e;
   --block-highlight: rgba(255, 255, 255, 0.12);
+  --record-row: #1a1a25;
+  --record-highlight-bg: rgba(122, 162, 247, 0.25);
+  --record-highlight-color: #9bbdff;
+  --input-bg: #22223a;
+  --input-border: #3a3a5a;
 }
 
 body.light-theme {
@@ -46,6 +51,11 @@ body.light-theme {
   --restart-hover: #5c7ce0;
   --grid-color: #d8d8e8;
   --block-highlight: rgba(0, 0, 0, 0.1);
+  --record-row: #f6f6fb;
+  --record-highlight-bg: rgba(59, 91, 219, 0.15);
+  --record-highlight-color: #3b5bdb;
+  --input-bg: #ffffff;
+  --input-border: #c8c8d8;
 }
 
 body {
@@ -243,5 +253,132 @@ kbd {
 }
 
 #restart-btn:hover {
+  background: var(--restart-hover);
+}
+
+/* ---- Records ---- */
+.hidden {
+  display: none;
+}
+
+.records {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+}
+
+.records-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: var(--record-row);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.records-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.records-row.is-highlight {
+  background: var(--record-highlight-bg);
+  color: var(--record-highlight-color);
+  font-weight: 700;
+}
+
+.records-empty {
+  font-size: 11px;
+  color: var(--controls-color);
+  padding: 2px 4px;
+}
+
+.records-bests {
+  font-size: 10px;
+  color: var(--controls-color);
+  letter-spacing: 0.5px;
+}
+
+#reset-records {
+  align-self: flex-start;
+  margin-top: 4px;
+  background: transparent;
+  color: var(--controls-color);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+#reset-records:hover {
+  color: var(--text);
+}
+
+#reset-records.is-confirming {
+  color: var(--overlay-title-color);
+  border-color: var(--overlay-title-color);
+}
+
+/* ---- Overlay records / formulario de nombre ---- */
+.overlay-records {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 220px;
+}
+
+#overlay-stats {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: var(--value-color);
+}
+
+.name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.name-form label {
+  font-size: 11px;
+  color: var(--overlay-title-color);
+  font-weight: 600;
+}
+
+.name-form input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.name-form input:focus {
+  outline: 2px solid var(--value-color);
+  outline-offset: 1px;
+}
+
+.name-form button {
+  background: var(--restart-bg);
+  color: var(--restart-color);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.name-form button:hover {
   background: var(--restart-hover);
 }
